@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glossbook"
+version = "0.1.0"
+description = "Annotate foreign-language EPUBs for learners: ruby glosses, per-sentence translation notes, chapter guides"
+readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.11"
+authors = [{ name = "xiebingqiang" }]
+keywords = ["epub", "language-learning", "kindle", "llm", "annotation", "ruby"]
+classifiers = [
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Education",
+]
+dependencies = ["lxml>=5", "openai>=1.40"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6", "httpx"]
+
+[project.scripts]
+glossbook = "glossbook.cli:main"
+
+[tool.setuptools]
+packages = ["glossbook"]
+
+[tool.setuptools.package-data]
+glossbook = ["models.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "SIM", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+"glossbook/prompt.py" = ["E501"]   # prompt text is kept on single lines on purpose
+"glossbook/{render,preview}.py" = ["E501"]   # embedded CSS/HTML templates
+"tests/*" = ["E501"]   # test data

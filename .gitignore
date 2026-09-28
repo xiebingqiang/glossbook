@@ -1,0 +1,23 @@
+# secrets and local config
+.env
+/models.toml
+/glossbook.toml
+
+# books and generated output (never commit copyrighted text)
+*.epub
+*.glossbook/
+preview.html
+
+# python
+__pycache__/
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+samples/src/
+
+# notes for Claude Code (local only)
+CLAUDE.md

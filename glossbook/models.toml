@@ -1,0 +1,60 @@
+# Model definitions. API keys live in .env (key_env names the variable); never put keys here.
+# price: USD per million tokens (all costs are in USD); input_cached is the price of prompt-cache hits.
+# extra_body: how to turn reasoning off differs per provider (see comments below). Turning it off
+# does not hurt annotation quality and makes runs faster and cheaper.
+# Only the ds4pro and ds4flash prices were checked (DeepSeek official peak-hour price, 2026-09, converted
+# from CNY at 7.1 CNY/USD). ds4pro, ds4flash, ds4pro-or and gemini were tested in real runs; gpt and
+# claude are untested examples. Check the provider's page before relying on cost estimates.
+# Override or add models in ./models.toml or ~/.config/glossbook/models.toml; an entry with the
+# same name replaces the built-in one entirely.
+
+default = "ds4pro"
+
+[models.ds4pro]
+# DeepSeek official API: thinking disabled. reasoning_effort = "none" is rejected (HTTP 400).
+base_url = "https://api.deepseek.com"
+model = "deepseek-v4-pro"
+key_env = "DEEPSEEK_API_KEY"
+extra_body = { thinking = { type = "disabled" } }
+price = { input = 1.27, input_cached = 0.042, output = 3.8 }   # 9 / 0.3 / 27 CNY
+
+[models.ds4flash]
+# DeepSeek official, flash model (V4.1-Flash): about 4x cheaper than ds4pro. Same thinking switch.
+base_url = "https://api.deepseek.com"
+model = "deepseek-flash"
+key_env = "DEEPSEEK_API_KEY"
+extra_body = { thinking = { type = "disabled" } }
+price = { input = 0.28, input_cached = 0.0056, output = 1.13 }   # 2 / 0.04 / 8 CNY
+
+[models.ds4pro-or]
+# OpenRouter: only reasoning.effort = "none" really turns reasoning off ("enabled": false is
+# ignored). The GMICloud upstream ignores effort = "none", so it is excluded.
+base_url = "https://openrouter.ai/api/v1"
+model = "deepseek/deepseek-v4-pro"
+key_env = "OPENROUTER_API_KEY"
+extra_body = { reasoning = { effort = "none" }, provider = { ignore = ["GMICloud"] } }
+price = { input = 1.3, input_cached = 0.05, output = 3.8 }
+
+[models.gpt]
+# Untested. gpt-5 models accept only the default temperature and want max_completion_tokens.
+base_url = "https://api.openai.com/v1"
+model = "gpt-5-mini"
+key_env = "OPENAI_API_KEY"
+temperature = false
+max_tokens_param = "max_completion_tokens"
+extra_body = { reasoning_effort = "minimal" }
+price = { input = 0.25, input_cached = 0.025, output = 2.0 }
+
+[models.claude]
+# Untested. Anthropic's OpenAI-compatible endpoint
+base_url = "https://api.anthropic.com/v1/"
+model = "claude-sonnet-5"
+key_env = "ANTHROPIC_API_KEY"
+price = { input = 3, input_cached = 0.3, output = 15 }
+
+[models.gemini]
+base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+model = "gemini-2.5-flash"
+key_env = "GEMINI_API_KEY"
+extra_body = { reasoning_effort = "none" }
+price = { input = 0.3, input_cached = 0.075, output = 2.5 }
